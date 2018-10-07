@@ -28,9 +28,13 @@ const Run = mongoose.model('Run', {
 async function getSomeFuckingBirds() {
   try {
     await bird.login('jake@jibdesigns.com')
+    const birds = await bird.getScootersNearby(39.108774, -84.511449, 3000);
+
+    if(birds.length === 0) return false;
+
     const run = new Run({ time: Date.now() });
     await run.save();
-    const birds = await bird.getScootersNearby(39.108774, -84.511449, 3000)
+
     birds.forEach(async (birdSingle)=>{
       const bird = new BirdDb({ 
         lat: birdSingle.location.latitude,
@@ -75,11 +79,11 @@ app.get('/runs', (req, res) => {
   });
 });
 
-getSomeFuckingBirds();
+// getSomeFuckingBirds();
 
-setInterval(()=> {
-  getSomeFuckingBirds();
-}, 240 * 1000); // 60 * 1000 milsec
+// setInterval(()=> {
+//   getSomeFuckingBirds();
+// }, 240 * 1000); // 60 * 1000 milsec
 
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
