@@ -1,3 +1,6 @@
+// Super quick and easy pull and api for scooter population.
+// Needs a lot of cleanup
+
 const Bird = require('../')
 const bird = new Bird()
 const mongoose = require('mongoose');
@@ -6,11 +9,12 @@ const express = require('express')
 const app = express()
 const cors = require('cors')
 const port = process.env.PORT || 8080;
+require('dotenv').config()
 
 app.use(cors())
+mongoose.connect(process.env.MONGO_URL);
 
-mongoose.connect('mongodb://jake:Baseball_200@ds129422.mlab.com:29422/birds');
-
+// Simple Mongoose Models for DB.
 const BirdDb = mongoose.model('Bird', { 
   lat: String,
   long: String,
@@ -25,14 +29,22 @@ const Run = mongoose.model('Run', {
   birds: [{ type: Schema.Types.ObjectId, ref: 'Bird' }]
 });
 
+
+// Getting the biiiirrrrddddsss. I use a token I got from the api
+// https://github.com/ubahnverleih/WoBike/blob/master/Bird.md
+
 async function getSomeFuckingBirds() {
   try {
-    await bird.login('jake@jibdesigns.com')
+    await bird.setAccessToken();
     const birds = await bird.getScootersNearby(39.108774, -84.511449, 3000);
 
     if(birds.length === 0) return false;
 
-    const run = new Run({ time: Date.now() });
+    const run = new Run(
+      { 
+        time: Date.now() 
+      }
+    );
     await run.save();
 
     birds.forEach(async (birdSingle)=>{
@@ -60,13 +72,15 @@ async function getSomeFuckingBirds() {
   }
 }
 
+
+// Routes for quick API
 app.get('/birds/:id', (req, res) => {
   Run.
   findOne({_id: req.params.id}).
   populate('birds').
   exec(function (err, birds) {
     if (err) return handleError(err);
-    res.json(birds);
+    res.status(200).json(birds);
   });
 });
 
@@ -75,15 +89,17 @@ app.get('/runs', (req, res) => {
   find().
   exec(function (err, runs) {
     if (err) return handleError(err);
-    res.json(runs);
+    res.status(200).json(runs);
   });
 });
 
-// getSomeFuckingBirds();
+// Inital push to db.
+getSomeFuckingBirds();
 
-// setInterval(()=> {
-//   getSomeFuckingBirds();
-// }, 240 * 1000); // 60 * 1000 milsec
+// Set them every 3 mins.
+setInterval(()=> {
+  getSomeFuckingBirds();
+}, 240 * 1000); 
 
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))

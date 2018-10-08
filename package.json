@@ -1,10 +1,10 @@
 {
   "name": "node-bird",
   "version": "1.1.0",
-  "description": "Put birds into db",
+  "description": "Put birds into db, and run job.",
   "main": "index.js",
   "scripts": {
-    "start": "node example/index",
+    "start": "node app/index",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Jake Boyles",
@@ -13,6 +13,7 @@
     "axios": "^0.18.0",
     "body-parser": "^1.18.3",
     "cors": "^2.8.4",
+    "dotenv": "^6.0.0",
     "express": "^4.16.3",
     "faker": "^4.1.0",
     "moment": "^2.22.2",

@@ -4,3 +4,4 @@ node_modules
 example/config.json
 example/stripe.js
 test.js
+.env
